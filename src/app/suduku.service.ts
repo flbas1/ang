@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { EntryPointService } from './entry-point.service';
+import { EntryPoint } from './entry-point.service';
 import { IRandomizer } from './irandomizer.interface';
 import { DefaultRandomizer } from './default-randomizer.service';
 
@@ -8,30 +8,30 @@ enum Ret { Unique, NotUnique, NoSolution }
 @Injectable({
   providedIn: 'root'
 })
-  
+
 export class SudukuService {
 
 
-  constructor(private entryPointService: EntryPointService) { }
+  constructor() { }
 
   //suduku(): void {
   // 0 = solve for
   private m_sudoku: number[][];
 
   // Maps sub square index to m_sudoku
-
-  private m_subIndex: any[] =
+  private m_subIndex: EntryPoint[][] =
     [
-      [new this.entryPointService.EntryPoint(0, 0), new this.entryPointService.EntryPoint(0, 1), new this.entryPointService.EntryPoint(0, 2), new this.entryPointService.EntryPoint(1, 0), new this.entryPointService.EntryPoint(1, 1), new this.entryPointService.EntryPoint(1, 2), new this.entryPointService.EntryPoint(2, 0), new this.entryPointService.EntryPoint(2, 1), new this.entryPointService.EntryPoint(2, 2)],
-      [new this.entryPointService.EntryPoint(0, 3), new this.entryPointService.EntryPoint(0, 4), new this.entryPointService.EntryPoint(0, 5), new this.entryPointService.EntryPoint(1, 3), new this.entryPointService.EntryPoint(1, 4), new this.entryPointService.EntryPoint(1, 5), new this.entryPointService.EntryPoint(2, 3), new this.entryPointService.EntryPoint(2, 4), new this.entryPointService.EntryPoint(2, 5)],
-      [new this.entryPointService.EntryPoint(0, 6), new this.entryPointService.EntryPoint(0, 7), new this.entryPointService.EntryPoint(0, 8), new this.entryPointService.EntryPoint(1, 6), new this.entryPointService.EntryPoint(1, 7), new this.entryPointService.EntryPoint(1, 8), new this.entryPointService.EntryPoint(2, 6), new this.entryPointService.EntryPoint(2, 7), new this.entryPointService.EntryPoint(2, 8)],
-      [new this.entryPointService.EntryPoint(3, 0), new this.entryPointService.EntryPoint(3, 1), new this.entryPointService.EntryPoint(3, 2), new this.entryPointService.EntryPoint(4, 0), new this.entryPointService.EntryPoint(4, 1), new this.entryPointService.EntryPoint(4, 2), new this.entryPointService.EntryPoint(5, 0), new this.entryPointService.EntryPoint(5, 1), new this.entryPointService.EntryPoint(5, 2)],
-      [new this.entryPointService.EntryPoint(3, 3), new this.entryPointService.EntryPoint(3, 4), new this.entryPointService.EntryPoint(3, 5), new this.entryPointService.EntryPoint(4, 3), new this.entryPointService.EntryPoint(4, 4), new this.entryPointService.EntryPoint(4, 5), new this.entryPointService.EntryPoint(5, 3), new this.entryPointService.EntryPoint(5, 4), new this.entryPointService.EntryPoint(5, 5)],
-      [new this.entryPointService.EntryPoint(3, 6), new this.entryPointService.EntryPoint(3, 7), new this.entryPointService.EntryPoint(3, 8), new this.entryPointService.EntryPoint(4, 6), new this.entryPointService.EntryPoint(4, 7), new this.entryPointService.EntryPoint(4, 8), new this.entryPointService.EntryPoint(5, 6), new this.entryPointService.EntryPoint(5, 7), new this.entryPointService.EntryPoint(5, 8)],
-      [new this.entryPointService.EntryPoint(6, 0), new this.entryPointService.EntryPoint(6, 1), new this.entryPointService.EntryPoint(6, 2), new this.entryPointService.EntryPoint(7, 0), new this.entryPointService.EntryPoint(7, 1), new this.entryPointService.EntryPoint(7, 2), new this.entryPointService.EntryPoint(8, 0), new this.entryPointService.EntryPoint(8, 1), new this.entryPointService.EntryPoint(8, 2)],
-      [new this.entryPointService.EntryPoint(6, 3), new this.entryPointService.EntryPoint(6, 4), new this.entryPointService.EntryPoint(6, 5), new this.entryPointService.EntryPoint(7, 3), new this.entryPointService.EntryPoint(7, 4), new this.entryPointService.EntryPoint(7, 5), new this.entryPointService.EntryPoint(8, 3), new this.entryPointService.EntryPoint(8, 4), new this.entryPointService.EntryPoint(8, 5)],
-      [new this.entryPointService.EntryPoint(6, 6), new this.entryPointService.EntryPoint(6, 7), new this.entryPointService.EntryPoint(6, 8), new this.entryPointService.EntryPoint(7, 6), new this.entryPointService.EntryPoint(7, 7), new this.entryPointService.EntryPoint(7, 8), new this.entryPointService.EntryPoint(8, 6), new this.entryPointService.EntryPoint(8, 7), new this.entryPointService.EntryPoint(8, 8)]
+      [new EntryPoint(0, 0), new EntryPoint(0, 1), new EntryPoint(0, 2), new EntryPoint(1, 0), new EntryPoint(1, 1), new EntryPoint(1, 2), new EntryPoint(2, 0), new EntryPoint(2, 1), new EntryPoint(2, 2)],
+      [new EntryPoint(0, 3), new EntryPoint(0, 4), new EntryPoint(0, 5), new EntryPoint(1, 3), new EntryPoint(1, 4), new EntryPoint(1, 5), new EntryPoint(2, 3), new EntryPoint(2, 4), new EntryPoint(2, 5)],
+      [new EntryPoint(0, 6), new EntryPoint(0, 7), new EntryPoint(0, 8), new EntryPoint(1, 6), new EntryPoint(1, 7), new EntryPoint(1, 8), new EntryPoint(2, 6), new EntryPoint(2, 7), new EntryPoint(2, 8)],
+      [new EntryPoint(3, 0), new EntryPoint(3, 1), new EntryPoint(3, 2), new EntryPoint(4, 0), new EntryPoint(4, 1), new EntryPoint(4, 2), new EntryPoint(5, 0), new EntryPoint(5, 1), new EntryPoint(5, 2)],
+      [new EntryPoint(3, 3), new EntryPoint(3, 4), new EntryPoint(3, 5), new EntryPoint(4, 3), new EntryPoint(4, 4), new EntryPoint(4, 5), new EntryPoint(5, 3), new EntryPoint(5, 4), new EntryPoint(5, 5)],
+      [new EntryPoint(3, 6), new EntryPoint(3, 7), new EntryPoint(3, 8), new EntryPoint(4, 6), new EntryPoint(4, 7), new EntryPoint(4, 8), new EntryPoint(5, 6), new EntryPoint(5, 7), new EntryPoint(5, 8)],
+      [new EntryPoint(6, 0), new EntryPoint(6, 1), new EntryPoint(6, 2), new EntryPoint(7, 0), new EntryPoint(7, 1), new EntryPoint(7, 2), new EntryPoint(8, 0), new EntryPoint(8, 1), new EntryPoint(8, 2)],
+      [new EntryPoint(6, 3), new EntryPoint(6, 4), new EntryPoint(6, 5), new EntryPoint(7, 3), new EntryPoint(7, 4), new EntryPoint(7, 5), new EntryPoint(8, 3), new EntryPoint(8, 4), new EntryPoint(8, 5)],
+      [new EntryPoint(6, 6), new EntryPoint(6, 7), new EntryPoint(6, 8), new EntryPoint(7, 6), new EntryPoint(7, 7), new EntryPoint(7, 8), new EntryPoint(8, 6), new EntryPoint(8, 7), new EntryPoint(8, 8)]
     ];
+
 
   // Maps sub square to index
   private m_subSquare: any[] =
@@ -109,7 +109,8 @@ export class SudukuService {
           // Remove used numbers in the sub square.
           let squareIndex = this.m_subSquare[y][x];
           for (var c = 0; c < 9; c++) {
-            let eps: EntryPoint = this.m_subIndex[squareIndex][c];
+            let p = this.m_subIndex[squareIndex][c];
+
             M[this.m_sudoku[p.x][p.y]] = 0;
           }
 
@@ -231,7 +232,7 @@ export class SudukuService {
         // Count used numbers in the sub square.
         let squareIndex = this.m_subSquare[y][x];
         for (var c = 0; c < 9; c++) {
-          let p: EntryPoint = this.m_subIndex[squareIndex][c];
+          let p = this.m_subIndex[squareIndex][c];
           if (p.x != y && p.y != x) {
             M[this.m_sudoku[p.x][p.y]]++;
           }
@@ -285,7 +286,7 @@ export class SudukuService {
       // Remove used numbers in the sub square.
       let squareIndex = this.m_subSquare[yRand][xRand];
       for (var c = 0; c < 9; c++) {
-        let p: EntryPoint = this.m_subIndex[squareIndex][c];
+        let p = this.m_subIndex[squareIndex][c];
         M[this.m_sudoku[p.x][p.y]] = 0;
       }
 
@@ -344,7 +345,7 @@ export class SudukuService {
           // Remove used numbers in the sub square.
           let squareIndex: number = this.m_subSquare[y][x];
           for (var c = 0; c < 9; c++) {
-            let p: EntryPoint = this.m_subIndex[squareIndex][c];
+            let p = this.m_subIndex[squareIndex][c];
             M[this.m_sudoku[p.x][p.y]] = 0;
           }
 
@@ -432,5 +433,5 @@ export class SudukuService {
         num += this.m_sudoku[y][x] === 0 ? 0 : 1;
 
     return num;
+  }
 }
-ssfasdf
