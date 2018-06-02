@@ -3,16 +3,20 @@ import { EntryPointService } from './entry-point.service';
 import { IRandomizer } from './irandomizer.interface';
 import { DefaultRandomizer } from './default-randomizer.service';
 
+enum Ret { Unique, NotUnique, NoSolution }
+
 @Injectable({
   providedIn: 'root'
 })
+  
 export class SudukuService {
+
 
   constructor(private entryPointService: EntryPointService) { }
 
   //suduku(): void {
   // 0 = solve for
-  private m_sudoku:number [][];
+  private m_sudoku: number[][];
 
   // Maps sub square index to m_sudoku
 
@@ -156,290 +160,277 @@ export class SudukuService {
   /// <param name="spots">Number of set spots in Sudoku.</param>
   /// <param name="numberOfTries">Number of tries before ending generation.</param>
   /// <returns>(Number of tries, success)</returns>
-  public Tuple<long, bool> Generate(int spots, int numberOfTries = 1000000);
-{
-  // Number of set spots.
-  int; num = GetNumberSpots();
+  Generate(spots: number, numberOfTries: number): [number, boolean] {
+    if (numberOfTries === 0)
+      numberOfTries = 1000000;
 
-  if (!IsSudokuFeasible() || num > spots) {
-    // The supplied data is not feasible.
-    // - or -
-    // The supplied data has too many spots set.
-    return Tuple.Create(0L, false);
-  }
+    // Number of set spots.
+    let num: number = this.GetNumberSpots();
 
-  /////////////////////////////////////
-  // Randomize spots
-  /////////////////////////////////////
-
-  var originalData = Data;
-
-  long; tries = 0;
-  for (; tries < numberOfTries; tries++) {
-    // Try to generate spots
-    if (Gen(spots - num)) {
-      // Test if unique solution.
-      if (IsSudokuUnique()) {
-        return Tuple.Create(tries, true);
-      }
+    if (!this.IsSudokuFeasible() || num > spots) {
+      // The supplied data is not feasible.
+      // - or -
+      // The supplied data has too many spots set.
+      return [0, false];
+      //return Tuple.Create(0L, false);
     }
 
-    // Start over.
-    Data = originalData;
-  }
+    /////////////////////////////////////
+    // Randomize spots
+    /////////////////////////////////////
 
-  return Tuple.Create(tries, false);
-}
+    var originalData = this.Data;
 
-		/// <summary>
-		/// Fast test if the data is feasible. 
-		/// Does not check if there is more than one solution.
-		/// </summary>
-		/// <returns>True if feasible</returns>
-		public bool; IsSudokuFeasible();
-{
-  for (int y = 0; y < 9 { ; } y++;)
-  {
-    for (int x = 0; x < 9 { ; } x++;)
-    {
-      // Set M of possible solutions
-      byte[]; M = new byte[10];
-
-      // Count used numbers in the vertical direction
-      for (int a = 0; a < 9 { ; } a++;)
-      M[m_sudoku[a, x]]++;
-      // Sudoku feasible?
-      if (!Feasible(M)) {
-        return false;
-      }
-
-      M = new byte[10];
-      // Count used numbers in the horizontal direction
-      for (int b = 0; b < 9 { ; } b++;)
-      M[m_sudoku[y, b]]++;
-      if (!Feasible(M)) {
-        return false;
-      }
-
-      M = new byte[10];
-      // Count used numbers in the sub square.
-      int; squareIndex = m_subSquare[y, x];
-      for (int c = 0; c < 9 { ; } c++;)
-      {
-        EntryPoint; p = m_subIndex[squareIndex, c];
-        if (p.x != y && p.y != x) {
-          M[m_sudoku[p.x, p.y]]++;
+    let tries: number = 0;
+    for (; tries < numberOfTries; tries++) {
+      // Try to generate spots
+      if (this.Gen(spots - num)) {
+        // Test if unique solution.
+        if (this.IsSudokuUnique()) {
+          //return Tuple.Create(tries, true);
+          return [tries, true];
         }
       }
-      if (!Feasible(M)) {
-        return false;
-      }
+
+      // Start over.
+      this.Data = originalData;
     }
+
+    //return Tuple.Create(tries, false);
+    return [tries, false];
   }
 
-  return true;
-}
+  /// <summary>
+  /// Fast test if the data is feasible. 
+  /// Does not check if there is more than one solution.
+  /// </summary>
+  /// <returns>True if feasible</returns>
+  IsSudokuFeasible(): boolean {
+    for (var y = 0; y < 9; y++) {
+      for (var x = 0; x < 9; x++) {
+        // Set M of possible solutions
+        let M: number[];
 
-		/// <summary>
-		/// Test generated Sudoku for solvability.
-		/// A true Sudoku has one and only one solution.
-		/// </summary>
-		/// <returns>True if unique</returns>
-		public bool; IsSudokuUnique();
-{
-  byte[,]; m = Data;
-  bool; b = TestUniqueness() == Ret.Unique;
-  Data = m;
-  return b;
-}
+        // Count used numbers in the vertical direction
+        for (var a = 0; a < 9; a++)
+          M[this.m_sudoku[a][x]]++;
+        // Sudoku feasible?
+        if (!this.Feasible(M)) {
+          return false;
+        }
 
-		// Generate spots
-		private bool; Gen(int spots);
-{
-  for (int i = 0; i < spots { ; } i++;)
-  {
-    int; xRand, yRand;
+        M = [];
+        // Count used numbers in the horizontal direction
+        for (var b = 0; b < 9; b++)
+          M[this.m_sudoku[y][b]]++;
+        if (!this.Feasible(M)) {
+          return false;
+        }
 
-    do {
-      xRand = Randomizer.GetInt(9);
-      yRand = Randomizer.GetInt(9);
-    } while (m_sudoku[yRand, xRand] != 0);
-
-    /////////////////////////////////////
-    // Get feasible values for spot.
-    /////////////////////////////////////
-
-    // Set M of possible solutions
-    byte[]; M = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-
-    // Remove used numbers in the vertical direction
-    for (int a = 0; a < 9 { ; } a++;)
-    M[m_sudoku[a, xRand]] = 0;
-
-    // Remove used numbers in the horizontal direction
-    for (int b = 0; b < 9 { ; } b++;)
-    M[m_sudoku[yRand, b]] = 0;
-
-    // Remove used numbers in the sub square.
-    int; squareIndex = m_subSquare[yRand, xRand];
-    for (int c = 0; c < 9 { ; } c++;)
-    {
-      EntryPoint; p = m_subIndex[squareIndex, c];
-      M[m_sudoku[p.x, p.y]] = 0;
+        M = [];
+        // Count used numbers in the sub square.
+        let squareIndex = this.m_subSquare[y][x];
+        for (var c = 0; c < 9; c++) {
+          let p: EntryPoint = this.m_subIndex[squareIndex][c];
+          if (p.x != y && p.y != x) {
+            M[this.m_sudoku[p.x][p.y]]++;
+          }
+        }
+        if (!this.Feasible(M)) {
+          return false;
+        }
+      }
     }
 
-    int; cM = 0;
-    // Calculate cardinality of M
-    for (int d = 1; d < 10 { ; } d++;)
-    cM += M[d] == 0 ? 0 : 1;
+    return true;
+  }
 
-    // Is there a number to use?
-    if (cM > 0) {
-      int; e = 0;
+  /// <summary>
+  /// Test generated Sudoku for solvability.
+  /// A true Sudoku has one and only one solution.
+  /// </summary>
+  /// <returns>True if unique</returns>
+  IsSudokuUnique(): boolean {
+    let m = this.Data;
+    let b: boolean = this.TestUniqueness() == Ret.Unique;
+    this.Data = m;
+    return b;
+  }
+
+  // Generate spots
+  Gen(spots: number): boolean {
+    for (var i = 0; i < spots; i++) {
+      let xRand: number, yRand: number;
 
       do {
-        // Randomize number from the feasible set M
-        e = Randomizer.GetInt(1, 10);
-      } while (M[e] == 0);
+        xRand = Randomizer.GetInt(9);
+        yRand = Randomizer.GetInt(9);
+      } while (this.m_sudoku[yRand][xRand] != 0);
 
-      // Set number in Sudoku
-      m_sudoku[yRand, xRand] = (byte); e;
-    }
-    else {
-      // Error
-      return false;
-    }
-  }
+      /////////////////////////////////////
+      // Get feasible values for spot.
+      /////////////////////////////////////
 
-  // Successfully generated a feasible set.
-  return true;
-}
+      // Set M of possible solutions
+      let M: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-private enum Ret { Unique, NotUnique, NoSolution }
+      // Remove used numbers in the vertical direction
+      for (var a = 0; a < 9; a++)
+        M[this.m_sudoku[a][xRand]] = 0;
 
-		// Is there one and only one solution?
-		private Ret; TestUniqueness();
-{
-  // Find untouched location with most information
-  int; xp = 0;
-  int; yp = 0;
-  byte[]; Mp = null;
-  int; cMp = 10;
+      // Remove used numbers in the horizontal direction
+      for (var b = 0; b < 9; b++)
+        M[this.m_sudoku[yRand][b]] = 0;
 
-  for (int y = 0; y < 9 { ; } y++;)
-  {
-    for (int x = 0; x < 9 { ; } x++;)
-    {
-      // Is this spot unused?
-      if (m_sudoku[y, x] == 0) {
-        // Set M of possible solutions
-        byte[]; M = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+      // Remove used numbers in the sub square.
+      let squareIndex = this.m_subSquare[yRand][xRand];
+      for (var c = 0; c < 9; c++) {
+        let p: EntryPoint = this.m_subIndex[squareIndex][c];
+        M[this.m_sudoku[p.x][p.y]] = 0;
+      }
 
-        // Remove used numbers in the vertical direction
-        for (int a = 0; a < 9 { ; } a++;)
-        M[m_sudoku[a, x]] = 0;
-
-        // Remove used numbers in the horizontal direction
-        for (int b = 0; b < 9 { ; } b++;)
-        M[m_sudoku[y, b]] = 0;
-
-        // Remove used numbers in the sub square.
-        int; squareIndex = m_subSquare[y, x];
-        for (int c = 0; c < 9 { ; } c++;)
-        {
-          EntryPoint; p = m_subIndex[squareIndex, c];
-          M[m_sudoku[p.x, p.y]] = 0;
-        }
-
-        int; cM = 0;
-        // Calculate cardinality of M
-        for (int d = 1; d < 10 { ; } d++;)
+      let cM: number = 0;
+      // Calculate cardinality of M
+      for (var d = 1; d < 10; d++)
         cM += M[d] == 0 ? 0 : 1;
 
-        // Is there more information in this spot than in the best yet?
-        if (cM < cMp) {
-          cMp = cM;
-          Mp = M;
-          xp = x;
-          yp = y;
+      // Is there a number to use?
+      if (cM > 0) {
+        let e = 0;
+
+        do {
+          // Randomize number from the feasible set M
+          e = Randomizer.GetInt(1, 10);
+        } while (M[e] == 0);
+
+        // Set number in Sudoku
+        this.m_sudoku[yRand][xRand] = e;
+      }
+      else {
+        // Error
+        return false;
+      }
+    }
+
+    // Successfully generated a feasible set.
+    return true;
+  }
+
+
+
+  // Is there one and only one solution?
+  TestUniqueness(): Ret {
+    // Find untouched location with most information
+    let xp: number = 0;
+    let yp: number = 0;
+    let Mp: number[] = null;
+    let cMp: number = 10;
+
+    for (var y = 0; y < 9; y++) {
+      for (var x = 0; x < 9; x++) {
+        // Is this spot unused?
+        if (this.m_sudoku[y][x] == 0) {
+          // Set M of possible solutions
+          let M: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+          // Remove used numbers in the vertical direction
+          for (var a = 0; a < 9; a++)
+            M[this.m_sudoku[a][x]] = 0;
+
+          // Remove used numbers in the horizontal direction
+          for (var b = 0; b < 9; b++)
+            M[this.m_sudoku[y][b]] = 0;
+
+          // Remove used numbers in the sub square.
+          let squareIndex: number = this.m_subSquare[y][x];
+          for (var c = 0; c < 9; c++) {
+            let p: EntryPoint = this.m_subIndex[squareIndex][c];
+            M[this.m_sudoku[p.x][p.y]] = 0;
+          }
+
+          let cM: number = 0;
+          // Calculate cardinality of M
+          for (var d = 1; d < 10; d++)
+            cM += M[d] == 0 ? 0 : 1;
+
+          // Is there more information in this spot than in the best yet?
+          if (cM < cMp) {
+            cMp = cM;
+            Mp = M;
+            xp = x;
+            yp = y;
+          }
         }
       }
     }
-  }
 
-  // Finished?
-  if (cMp == 10) {
-    return Ret.Unique;
-  }
-
-  // Couldn't find a solution?
-  if (cMp == 0) {
-    return Ret.NoSolution;
-  }
-
-  // Try elements
-  int; success = 0;
-  for (int i = 1; i < 10 { ; } i++;)
-  {
-    if (Mp[i] != 0) {
-      m_sudoku[yp, xp] = Mp[i];
-
-      switch (TestUniqueness()) {
-        case Ret.Unique:
-          success++;
-          break;
-
-        case Ret.NotUnique:
-          return Ret.NotUnique;
-
-        case Ret.NoSolution:
-          break;
-      }
-
-      // More than one solution found?
-      if (success > 1) {
-        return Ret.NotUnique;
-      }
-    }
-  }
-
-  // Restore to original state.
-  m_sudoku[yp, xp] = 0;
-
-  switch (success) {
-    case 0:
-      return Ret.NoSolution;
-
-    case 1:
+    // Finished?
+    if (cMp == 10) {
       return Ret.Unique;
-
-    default:
-      // Won't happen.
-      return Ret.NotUnique;
-  }
-}
-
-        private bool; Feasible(byte[] M);
-{
-  for (int d = 1; d < 10 { ; } d++;)
-  if (M[d] > 1) {
-    return false;
-  }
-
-  return true;
-}
-
-        private int; GetNumberSpots();
-{
-  int; num = 0;
-
-  for (int y = 0; y < 9 { ; } y++;)
-  for (int x = 0; x < 9 { ; } x++;)
-  num += m_sudoku[y, x] === 0 ? 0 : 1;
-
-  return num;
-}
     }
-}
 
+    // Couldn't find a solution?
+    if (cMp == 0) {
+      return Ret.NoSolution;
+    }
+
+    // Try elements
+    let success: number = 0;
+    for (var i = 1; i < 10; i++) {
+      if (Mp[i] != 0) {
+        this.m_sudoku[yp][xp] = Mp[i];
+
+        switch (this.TestUniqueness()) {
+          case Ret.Unique:
+            success++;
+            break;
+
+          case Ret.NotUnique:
+            return Ret.NotUnique;
+
+          case Ret.NoSolution:
+            break;
+        }
+
+        // More than one solution found?
+        if (success > 1) {
+          return Ret.NotUnique;
+        }
+      }
+    }
+
+    // Restore to original state.
+    this.m_sudoku[yp][xp] = 0;
+
+    switch (success) {
+      case 0:
+        return Ret.NoSolution;
+
+      case 1:
+        return Ret.Unique;
+
+      default:
+        // Won't happen.
+        return Ret.NotUnique;
+    }
+  }
+
+  Feasible(M: number[]): boolean {
+    for (var d = 1; d < 10; d++)
+      if (M[d] > 1) {
+        return false;
+      }
+
+    return true;
+  }
+
+  GetNumberSpots(): number {
+    let num: number = 0;
+
+    for (var y = 0; y < 9; y++)
+      for (var x = 0; x < 9; x++)
+        num += this.m_sudoku[y][x] === 0 ? 0 : 1;
+
+    return num;
 }
+ssfasdf
