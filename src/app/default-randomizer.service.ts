@@ -12,18 +12,17 @@ export class DefaultRandomizer  implements IRandomizer {
 
   // public  GetInt( max:number):number
   // {
-  //     //return Math.floor(Math.random() * max) + 1 ;
-  //     return this.GetInt(0, max);
+  //     return Math.floor(Math.random() * max) + 1 ;
+  //     //return this.GetInt(0, max);
   // }
 
   public  GetInt( min:number,  max:number):number
   {
-    if (max==0)
-    {
-      max=min;
-      min=0;
-    }
+    // if (max==0)
+    // {
+    //   max=min;
+    //   min=0;
+    // }
     return Math.floor(Math.random() * max) + min ;
   }
-
 }

@@ -9,7 +9,7 @@ enum Ret { Unique, NotUnique, NoSolution }
   providedIn: 'root'
 })
 
-export class SudukuService {
+export class SudukuService   {
 
 
   constructor() { }
@@ -67,15 +67,15 @@ export class SudukuService {
   }
 
 
-  // //IRandomizer randomizer = new DefaultRandomizer();
-  // let randomizer: IRandomizer = new DefaultRandomizer();
+  //  //IRandomizer randomizer = new DefaultRandomizer();
+  // let randomizer: DefaultRandomizer = new DefaultRandomizer();
 
   // // class Randomizer implements IRandomizer {
   // get GetInt(min: number, max: number): any {
   //   return randomizer;
   // };
 
-  // set Randomizer(value: IRandomizer) {
+  // set Randomizer(value: DefaultRandomizer) {
   //   randomizer = value;
   // }
 
@@ -264,8 +264,8 @@ export class SudukuService {
       let xRand: number, yRand: number;
 
       do {
-        xRand = Randomizer.GetInt(9);
-        yRand = Randomizer.GetInt(9);
+        xRand = new DefaultRandomizer().GetInt(0,9);
+        yRand = new DefaultRandomizer().GetInt(0,9);
       } while (this.m_sudoku[yRand][xRand] != 0);
 
       /////////////////////////////////////
@@ -301,7 +301,7 @@ export class SudukuService {
 
         do {
           // Randomize number from the feasible set M
-          e = Randomizer.GetInt(1, 10);
+          e = new DefaultRandomizer().GetInt(1, 10);
         } while (M[e] == 0);
 
         // Set number in Sudoku
