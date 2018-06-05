@@ -9,17 +9,23 @@ enum Ret { Unique, NotUnique, NoSolution }
   providedIn: 'root'
 })
 
-export class SudukuService   {
+export class SudukuService {
 
-
-  constructor() { }
+  m_sudoku: number[][] = [[]];
+  constructor() {
+    for (var y = 0; y < 9; y++) {
+      this.m_sudoku[y] = [];
+      for (var x = 0; x < 9; x++)
+        this.m_sudoku[y][x] = 0;
+    }
+  }
 
   //suduku(): void {
   // 0 = solve for
-  private m_sudoku: number[][];
+
 
   // Maps sub square index to m_sudoku
-  private m_subIndex: EntryPoint[][] =
+  m_subIndex: EntryPoint[][] =
     [
       [new EntryPoint(0, 0), new EntryPoint(0, 1), new EntryPoint(0, 2), new EntryPoint(1, 0), new EntryPoint(1, 1), new EntryPoint(1, 2), new EntryPoint(2, 0), new EntryPoint(2, 1), new EntryPoint(2, 2)],
       [new EntryPoint(0, 3), new EntryPoint(0, 4), new EntryPoint(0, 5), new EntryPoint(1, 3), new EntryPoint(1, 4), new EntryPoint(1, 5), new EntryPoint(2, 3), new EntryPoint(2, 4), new EntryPoint(2, 5)],
@@ -59,11 +65,26 @@ export class SudukuService   {
   }
 
   set Data(value: any) {
-    if (value.length == 2 && value.GetUpperBound(0) == 8 && value.GetUpperBound(1) == 8) {
+    // if (value.length == 2 && value.GetUpperBound(0) == 8 && value.GetUpperBound(1) == 8) {
+      console.log("board created!");
+      
       this.m_sudoku = value;
-    }
-    else
-      throw new Error("Array has wrong size");
+
+      
+       let line:string="";
+       for(var y in value){
+         line="";
+       for (var x in value)
+       {
+       line +=value[y][x] + " ";
+       }
+       
+      }
+      console.log(line);
+
+    // }
+    // else
+    //   throw new Error("Array has wrong size");
   }
 
 
@@ -210,7 +231,7 @@ export class SudukuService   {
     for (var y = 0; y < 9; y++) {
       for (var x = 0; x < 9; x++) {
         // Set M of possible solutions
-        let M: number[];
+        let M: number[]=[];
 
         // Count used numbers in the vertical direction
         for (var a = 0; a < 9; a++)
@@ -264,8 +285,8 @@ export class SudukuService   {
       let xRand: number, yRand: number;
 
       do {
-        xRand = new DefaultRandomizer().GetInt(0,9);
-        yRand = new DefaultRandomizer().GetInt(0,9);
+        xRand = new DefaultRandomizer().GetInt(0, 9);
+        yRand = new DefaultRandomizer().GetInt(0, 9);
       } while (this.m_sudoku[yRand][xRand] != 0);
 
       /////////////////////////////////////
